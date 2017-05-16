@@ -42,14 +42,14 @@ class PriceHandler(object):
         be more robust and straightforward to follow.
         """
         prices_dict = dict(
-            (k, v) for k,v in [
+            (k, v) for k, v in [
                 (p, {"bid": None, "ask": None, "time": None}) for p in self.pairs
             ]
         )
         inv_prices_dict = dict(
-            (k, v) for k,v in [
+            (k, v) for k, v in [
                 (
-                    "%s%s" % (p[3:], p[:3]), 
+                    "%s%s" % (p[3:], p[:3]),
                     {"bid": None, "ask": None, "time": None}
                 ) for p in self.pairs
             ]
@@ -65,10 +65,10 @@ class PriceHandler(object):
         """
         getcontext().rounding = ROUND_HALF_DOWN
         inv_pair = "%s%s" % (pair[3:], pair[:3])
-        inv_bid = (Decimal("1.0")/bid).quantize(
+        inv_bid = (Decimal("1.0") / bid).quantize(
             Decimal("0.00001")
         )
-        inv_ask = (Decimal("1.0")/ask).quantize(
+        inv_ask = (Decimal("1.0") / ask).quantize(
             Decimal("0.00001")
         )
         return inv_pair, inv_bid, inv_ask
@@ -129,7 +129,7 @@ class HistoricCSVPriceHandler(PriceHandler):
         """
         Opens the CSV files from the data directory, converting
         them into pandas DataFrames within a pairs dictionary.
-        
+
         The function then concatenates all of the separate pairs
         for a single day into a single data frame that is time 
         ordered, allowing tick data events to be added to the queue 
@@ -138,7 +138,8 @@ class HistoricCSVPriceHandler(PriceHandler):
         for p in self.pairs:
             pair_path = os.path.join(self.csv_dir, '%s_%s.csv' % (p, date_str))
             if 2 > sum(1 for line in open(pair_path)):
-                # Use an empty DataFrame if the CSV file contains only the header row
+                # Use an empty DataFrame if the CSV file contains only the
+                # header row
                 self.pair_frames[p] = pd.DataFrame()
             else:
                 self.pair_frames[p] = pd.io.parsers.read_csv(
@@ -151,7 +152,7 @@ class HistoricCSVPriceHandler(PriceHandler):
 
     def _update_csv_for_day(self):
         try:
-            dt = self.file_dates[self.cur_date_idx+1]
+            dt = self.file_dates[self.cur_date_idx + 1]
         except IndexError:  # End of file dates
             return False
         else:

@@ -48,8 +48,8 @@ def trade(events, strategy, portfolio, execution, heartbeat):
 
 if __name__ == "__main__":
     # Set up logging
-    # Logging config is in ../logging.conf relative to this source file 
-    this_src_path = dirname(abspath(getsourcefile(lambda:0)))
+    # Logging config is in ../logging.conf relative to this source file
+    this_src_path = dirname(abspath(getsourcefile(lambda: 0)))
     log_conf_file = join('..', 'logging.conf')
     logging.config.fileConfig(normpath(join(this_src_path, log_conf_file)))
     logger = logging.getLogger('qsforex.trading.trading')
@@ -67,11 +67,11 @@ if __name__ == "__main__":
     # Create the OANDA market price streaming class
     # making sure to provide authentication commands
     prices = StreamingForexPrices(
-        settings.STREAM_DOMAIN, settings.ACCESS_TOKEN, 
+        settings.STREAM_DOMAIN, settings.ACCESS_TOKEN,
         settings.ACCOUNT_ID, pairs, events
     )
 
-    # Create the strategy/signal generator, passing the 
+    # Create the strategy/signal generator, passing the
     # instrument and the events queue
     strategy = TestStrategy(pairs, events)
 
@@ -85,11 +85,11 @@ if __name__ == "__main__":
     # Create the execution handler making sure to
     # provide authentication commands
     execution = OANDAExecutionHandler(
-        settings.API_DOMAIN, 
-        settings.ACCESS_TOKEN, 
+        settings.API_DOMAIN,
+        settings.ACCESS_TOKEN,
         settings.ACCOUNT_ID
     )
-    
+
     # Create two separate threads: One for the trading loop
     # and another for the market price streaming class
     trade_thread = threading.Thread(
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         )
     )
     price_thread = threading.Thread(target=prices.stream_to_queue, args=[])
-    
+
     # Start both threads
     logger.info("Starting trading thread")
     trade_thread.start()

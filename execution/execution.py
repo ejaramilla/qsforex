@@ -12,7 +12,6 @@ import oandapyV20
 import json
 
 
-
 class ExecutionHandler(object):
     """
     Provides an abstract base class to handle all execution in the
@@ -37,6 +36,7 @@ class SimulatedExecution(object):
     Instead, the Portfolio object actually provides fill handling.
     This will be modified in later versions.
     """
+
     def execute_order(self, event):
         pass
 
@@ -58,17 +58,17 @@ class OANDAExecutionHandler(ExecutionHandler):
             if event.side == 'buy':
                 mktOrder = MarketOrderRequest(
                     instrument=instrument,
-                    units= event.units,
+                    units=event.units,
                     #type= event.order_type,
                     #side= event.side
-                    )
+                )
             if event.side == 'sell':
                 mktOrder = MarketOrderRequest(
                     instrument=instrument,
-                    units= (event.units*-1),
+                    units=(event.units * -1),
                     #type= event.order_type,
                     #side= event.side
-                    )
+                )
         else:
             Print('Order Type Not Supported ' + self.order_type)
             return
@@ -80,7 +80,7 @@ class OANDAExecutionHandler(ExecutionHandler):
 
         r = orders.OrderCreate(accountID, data=mktOrder.data)
         try:
-            #Try and execute order
+            # Try and execute order
             rv = api.request(r)
         except oandapyV20.exceptions.V20Error as err:
             print(r.status_code, err)
@@ -89,4 +89,3 @@ class OANDAExecutionHandler(ExecutionHandler):
 
         #response = self.conn.getresponse().read().decode("utf-8").replace("\n","").replace("\t","")
         self.logger.debug(json.dumps(rv, indent=2))
-        

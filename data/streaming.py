@@ -12,7 +12,7 @@ from qsforex.data.price import PriceHandler
 
 class StreamingForexPrices(PriceHandler):
     def __init__(
-        self, domain, access_token, 
+        self, domain, access_token,
         account_id, pairs, events_queue
     ):
         self.domain = domain
@@ -31,10 +31,10 @@ class StreamingForexPrices(PriceHandler):
         """
         getcontext().rounding = ROUND_HALF_DOWN
         inv_pair = "%s%s" % (pair[3:], pair[:3])
-        inv_bid = (Decimal("1.0")/bid).quantize(
+        inv_bid = (Decimal("1.0") / bid).quantize(
             Decimal("0.00001")
         )
-        inv_ask = (Decimal("1.0")/ask).quantize(
+        inv_ask = (Decimal("1.0") / ask).quantize(
             Decimal("0.00001")
         )
         return inv_pair, inv_bid, inv_ask
@@ -50,9 +50,10 @@ class StreamingForexPrices(PriceHandler):
         try:
             requests.packages.urllib3.disable_warnings()
             s = requests.Session()
-            url = "https://" + self.domain + "/v3/accounts/" + self.account_id +'/pricing/stream'
-            headers = {'Authorization' : 'Bearer ' + self.access_token}
-            params = {'instruments' : pair_list, 'accountId' : self.account_id}
+            url = "https://" + self.domain + "/v3/accounts/" + \
+                self.account_id + '/pricing/stream'
+            headers = {'Authorization': 'Bearer ' + self.access_token}
+            params = {'instruments': pair_list, 'accountId': self.account_id}
             req = requests.Request('GET', url, headers=headers, params=params)
             pre = req.prepare()
             resp = s.send(pre, stream=True, verify=False)
@@ -72,12 +73,13 @@ class StreamingForexPrices(PriceHandler):
                     msg = json.loads(dline)
                 except Exception as e:
                     self.logger.error(
-                        "Caught exception when converting message into json: %s" % str(e)
+                        "Caught exception when converting message into json: %s" % str(
+                            e)
                     )
                     return
                 if "instrument" in msg:
-                    #self.logger.debug(msg)
-                    getcontext().rounding = ROUND_HALF_DOWN 
+                    # self.logger.debug(msg)
+                    getcontext().rounding = ROUND_HALF_DOWN
                     instrument = msg["instrument"].replace("_", "")
                     time = msg["time"]
                     bid = Decimal(str(msg["bids"][1]["price"])).quantize(
@@ -89,7 +91,8 @@ class StreamingForexPrices(PriceHandler):
                     self.prices[instrument]["bid"] = bid
                     self.prices[instrument]["ask"] = ask
                     # Invert the prices (GBP_USD -> USD_GBP)
-                    inv_pair, inv_bid, inv_ask = self.invert_prices(instrument, bid, ask)
+                    inv_pair, inv_bid, inv_ask = self.invert_prices(
+                        instrument, bid, ask)
                     self.prices[inv_pair]["bid"] = inv_bid
                     self.prices[inv_pair]["ask"] = inv_ask
                     self.prices[inv_pair]["time"] = time
